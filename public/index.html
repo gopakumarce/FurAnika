@@ -5,10 +5,18 @@
 </head>
 
 <body>
-  <div>
-    <canvas id="board" width="700" height="700"></canvas>  
-  </div>
-
+  <form id='allcanvases' style="position:relative">
+    <div id='boarddiv' style="position:absolute; top:0px; left:0px; z-index:1">  
+        <canvas id='board' width='700' height='600'>
+              The Board.
+        </canvas>
+    </div>
+    <div id='handdiv' style="position:absolute; top:0px; left:800px; z-index:2">
+        <canvas id='hand' width='300' height='100'>
+              The Hand.
+        </canvas>
+    </div>
+  </form>
 <script>
 
   var Sequence = { };
@@ -16,23 +24,28 @@
   /**
    * A single sequence cell in "blocks", not pixels
    */
+
+  Sequence.HAND_WIDTH = 3
+  Sequence.HAND_HEIGHT = 1
   Sequence.BOARD_WIDTH = 7; 
-  Sequence.BOARD_HEIGHT = 7;
+  Sequence.BOARD_HEIGHT = 6;
 
   Sequence.BLOCK_SIZE_PIXELS = 100;
   Sequence.BOARD_HEIGHT_PIXELS = Sequence.BOARD_HEIGHT * Sequence.BLOCK_SIZE_PIXELS;
   Sequence.BOARD_WIDTH_PIXELS = Sequence.BOARD_WIDTH * Sequence.BLOCK_SIZE_PIXELS;
   Sequence.BLOCK_BORDER_COLOR = "#484848";
-  Sequence.BLOCK_COLORS = { 'X': 'black', 'b': 'cyan', 'B': 'blue', 'O': 'orange',
-                            'Y': 'yellow', 'G': 'green', 'P': '#9370D8', 'R': 'red' };
+  Sequence.BLOCK_COLORS = ['black', 'cyan', 'blue', 'orange',
+                           'yellow', 'green', '#9370D8', 'red'];
 
-  var Board = $("#board").get(0);
+  var Board = $("#allcanvases #boarddiv #board").get(0)
   if (!Board || !Board.getContext || !Board.getContext('2d'))
-    alert("You must use a browser that supports HTML5 Canvas to run this demo.");
+    alert("You must use a browser that supports HTML5 Canvas to run this game.");
+
+  var Hand = $("#allcanvases #handdiv #hand").get(0)
 
   function drawBoard () {
 
-       var context = Board.getContext('2d');
+      var context = Board.getContext('2d');
       // Clear canvas.
       context.clearRect(0, 0, Sequence.BOARD_WIDTH_PIXELS, Sequence.BOARD_HEIGHT_PIXELS);
 
@@ -47,13 +60,36 @@
           context.lineWidth = 1;
           context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
           context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-          nextColor++;
+          nextColor = (nextColor + 1) % 8;
+        }
+      }
+  }
+
+  function drawHand () {
+
+       var context = Hand.getContext('2d');
+      // Clear canvas.
+      context.clearRect(0, 0, Sequence.BOARD_WIDTH_PIXELS, Sequence.BOARD_HEIGHT_PIXELS);
+
+      var nextColor = 0;
+
+      for (var x = 0; x < Sequence.HAND_WIDTH; x++) {
+        for (var y = 0; y < Sequence.HAND_HEIGHT; y++) {
+          var left = x * Sequence.BLOCK_SIZE_PIXELS;
+          var top = y * Sequence.BLOCK_SIZE_PIXELS;
+          context.fillStyle = Sequence.BLOCK_COLORS[nextColor];
+          context.fillRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
+          context.lineWidth = 1;
+          context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
+          context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
+          nextColor = (nextColor+1) % 8;
         }
       }
   }
 
   function startSequence() {
     drawBoard();
+    drawHand();
   }
 
   startSequence();
