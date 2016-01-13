@@ -1,144 +1,101 @@
 <html>
 <head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #F0F0F0;
+    }
+  </style>
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script src="konva.min.js"></script>
 </head>
 
 <body>
-  <form id='allcanvases' style="position:relative">
-    <div id='boarddiv' style="position:absolute; top:0px; left:0px; z-index:1">  
-        <canvas id='board' width='700' height='600'>
-              The Board.
-        </canvas>
-    </div>
-    <div id='handdiv' style="position:absolute; top:0px; left:800px; z-index:2">
-        <canvas id='hand' width='300' height='100'>
-              The Hand.
-        </canvas>
-    </div>
-    <div id='myuseddiv' style="position:absolute; top:200px; left:900px; z-index:2">
-        <canvas id='myused' width='100' height='100'>
-              My Used Cards.
-        </canvas>
-    </div>
-    <div id='oppuseddiv' style="position:absolute; top:400px; left:900px; z-index:2">
-        <canvas id='oppused' width='100' height='100'>
-              Opponents Used Cards.
-        </canvas>
-    </div>
-  </form>
+
+<div id='container'></div>
+
 <script>
 
-  var Sequence = { };
+  var width = window.innerWidth;
+  var height = window.innerHeight;
 
-  /**
-   * A single sequence cell in "blocks", not pixels
+  /*
+   * The actual play baord related parameters. The board is a 7-column
+   * 6-row board
    */
+  var boardTop = 4; // Start 4 pixels from top
+  var boardLeft = 4;  // Start 4 pixels from left
+  var boardWidth = Math.floor((width * 3)/4) - boardLeft; // Use 3/4th of the screen for board
+  var boardHeight = height - 2*boardTop; //Leave space at top and bottom
+  var boardCellWide = Math.floor(boardWidth/7); // 7 cells wide
+  var boardCellHigh = Math.floor(boardHeight/6);  // 6 cells high
+  var boardCell = Math.min(boardCellWide,boardCellHigh)
 
-  Sequence.HAND_WIDTH = 3
-  Sequence.HAND_HEIGHT = 1
-  Sequence.BOARD_WIDTH = 7; 
-  Sequence.BOARD_HEIGHT = 6;
+  var imageObj = new Image();
+  
+  var stage = new Konva.Stage({
+    container: 'container',
+    width: width,
+    height: height
+  });
 
-  Sequence.BLOCK_SIZE_PIXELS = 100;
-  Sequence.BOARD_HEIGHT_PIXELS = Sequence.BOARD_HEIGHT * Sequence.BLOCK_SIZE_PIXELS;
-  Sequence.BOARD_WIDTH_PIXELS = Sequence.BOARD_WIDTH * Sequence.BLOCK_SIZE_PIXELS;
-  Sequence.HAND_HEIGHT_PIXELS = Sequence.HAND_HEIGHT * Sequence.BLOCK_SIZE_PIXELS;
-  Sequence.HAND_WIDTH_PIXELS = Sequence.HAND_WIDTH * Sequence.BLOCK_SIZE_PIXELS;
-  Sequence.BLOCK_BORDER_COLOR = "#484848";
-  Sequence.BLOCK_COLORS = ['black', 'cyan', 'blue', 'orange',
-                           'yellow', 'green', '#9370D8', 'red'];
+  var layer = new Konva.Layer();
 
-  var Board = $("#allcanvases #boarddiv #board").get(0)
-  if (!Board || !Board.getContext || !Board.getContext('2d'))
-    alert("You must use a browser that supports HTML5 Canvas to run this game.");
+  /*
+  * create a group which will be used to combine
+  * multiple simple shapes.  Transforming the group will
+  * transform all of the simple shapes together as
+  * one unit
+  */
+  var group = new Konva.Group({
+      x: boardLeft,
+      y: boardTop,
+      rotation: 0
+  });
 
-  var Hand = $("#allcanvases #handdiv #hand").get(0)
-  var myUsed = $("#allcanvases #myuseddiv #myused").get(0)
-  var oppUsed = $("#allcanvases #oppuseddiv #oppused").get(0)
+  var images = [
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
+                ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg']
+               ]                
 
-  function drawBoard () {
 
-      var context = Board.getContext('2d');
-      // Clear canvas.
-      context.clearRect(0, 0, Sequence.BOARD_WIDTH_PIXELS, Sequence.BOARD_HEIGHT_PIXELS);
+  var imageObjs = [];
 
-      var nextColor = 0;
+  function cellImage(row, column) {
+      var cell = new Konva.Image({
+          x: boardLeft + (column * boardCell),
+          y: boardTop + (row * boardCell),
+          image: imageObjs[row][column],
+          width: boardCell,
+          height: boardCell
+      });
+      group.add(cell);
+      cell.draw();
+  }
 
-      for (var x = 0; x < Sequence.BOARD_WIDTH; x++) {
-        for (var y = 0; y < Sequence.BOARD_HEIGHT; y++) {
-          var left = x * Sequence.BLOCK_SIZE_PIXELS;
-          var top = y * Sequence.BLOCK_SIZE_PIXELS;
-          context.fillStyle = Sequence.BLOCK_COLORS[nextColor];
-          context.fillRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-          context.lineWidth = 1;
-          context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
-          context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-          nextColor = (nextColor + 1) % 8;
+  for(var row = 0; row < 6; row++) {
+      imageObjs[row] = [];
+      for(var column = 0; column < 7; column++) {
+          cellImageSpecific = cellImage.bind(null, row, column)
+          imageObjs[row][column] = new Image();
+          imageObjs[row][column].onload = cellImageSpecific;
+          imageObjs[row][column].src = images[row][column];
+          if (imageObjs[row][column].complete) {
+              $(imageObjs[row][column]).load()
+          }
         }
-      }
   }
+ 
+  layer.add(group);
+  stage.add(layer);
 
-  function drawHand () {
-
-       var context = Hand.getContext('2d');
-      // Clear canvas.
-      context.clearRect(0, 0, Sequence.HAND_WIDTH_PIXELS, Sequence.HAND_HEIGHT_PIXELS);
-
-      var nextColor = 0;
-
-      for (var x = 0; x < Sequence.HAND_WIDTH; x++) {
-        for (var y = 0; y < Sequence.HAND_HEIGHT; y++) {
-          var left = x * Sequence.BLOCK_SIZE_PIXELS;
-          var top = y * Sequence.BLOCK_SIZE_PIXELS;
-          context.fillStyle = Sequence.BLOCK_COLORS[nextColor];
-          context.fillRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-          context.lineWidth = 1;
-          context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
-          context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-          nextColor = (nextColor+1) % 8;
-        }
-      }
-  }
-
-  function drawMyUsed () {
-
-      var context = myUsed.getContext('2d');
-      // Clear canvas.
-      context.clearRect(0, 0, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-   
-      var left = 0;
-      var top = 0;
-      context.fillStyle = Sequence.BLOCK_COLORS[2];
-      context.fillRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-      context.lineWidth = 1;
-      context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
-      context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-  }
-
-    function drawOppUsed () {
-
-      var context = oppUsed.getContext('2d');
-      // Clear canvas.
-      context.clearRect(0, 0, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-   
-      var left = 0;
-      var top = 0;
-      context.fillStyle = Sequence.BLOCK_COLORS[3];
-      context.fillRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-      context.lineWidth = 1;
-      context.strokeStyle = Sequence.BLOCK_BORDER_COLOR;
-      context.strokeRect(left, top, Sequence.BLOCK_SIZE_PIXELS, Sequence.BLOCK_SIZE_PIXELS);
-  }
-
-  function startSequence() {
-    drawBoard();
-    drawHand();
-    drawMyUsed();
-    drawOppUsed();
-  }
-
-  startSequence();
 
 </script>
 </body>
