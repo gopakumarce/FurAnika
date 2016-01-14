@@ -38,7 +38,6 @@
   var boardTop = 8; // Start 8 pixels from top
   var boardLeft = 8;  // Start 8 pixels from left
   var boardToHandSpace = 4;
-  var emptyHand = 'images/yoda.jpg';
   /* 
    * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
    * width = boardLeft + boardColumns*boardCellWide + boardToHandSpace + 
@@ -60,18 +59,30 @@
    */
   var cardStackSeperation = Math.floor((boardRows*boardCell - 4*boardCell)/3);
 
-  var imageFiles = ['images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
-                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
-                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
-                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg']
+  /*
+   * 0 to 18 are animals, 19 is FREE spot
+   */
   var boardImages = [
-                [20, 09, 17, 16, 15, 00, 20], 
+                [19, 09, 17, 16, 15, 00, 19], 
                 [18, 07, 01, 13, 03, 04, 12], 
                 [11, 08, 02, 05, 10, 14, 06], 
                 [12, 13, 14, 15, 16, 17, 18], 
                 [05, 06, 07, 08, 09, 03, 11], 
-                [20, 00, 01, 02, 10, 08, 20]
+                [19, 00, 01, 02, 10, 04, 19]
                ];                
+
+  /*
+   * 20 is the symbol for deck of cards, 21 for dragon, 22 for unicorn, 23 for question mark
+   */
+  var cardDeck = 20;
+  var cardDragon = 21;
+  var cardUnicorn = 22;
+  var cardQuestion = 23;
+
+  var imageFiles = ['images/tiger.jpg', 'images/kangaroo.jpg', 'images/giraffe.jpg', 'images/fox.jpg', 'images/tortoise.jpg', 'images/hippo.jpg',
+                    'images/monkey.jpg', 'images/zebra.jpg', 'images/alligator.jpg', 'images/lion.jpg', 'images/wolf.jpg', 'images/moose.jpg',
+                    'images/panda.jpg', 'images/shark.jpg', 'images/camel.jpg', 'images/ostrich.jpg', 'images/dolphin.jpg', 'images/elephant.jpg',
+                    'images/penguin.jpg', 'images/free.png', 'images/deck.jpg', 'images/dragon.jpg', 'images/unicorn.jpg', 'images/question.jpg'];
 
   var startButtons = document.getElementById('start-buttons');
 
@@ -161,7 +172,7 @@
           });
           // Start with empty hand
           layer.add(myHand[hand]);
-          setHand(hand, emptyHand);
+          setHand(hand, imageFiles[cardQuestion]);
       }
   }
 
@@ -188,8 +199,7 @@
               height: boardCell});
 
       layer.add(usedHand);
-      // Start with emptyHand
-      setUsedHand(emptyHand);
+      setUsedHand(imageFiles[cardQuestion]);
   }
 
   function setUnusedCards(imageSrc) {
@@ -215,8 +225,7 @@
               height: boardCell});
 
       layer.add(unusedCards);
-      // Start with emptyHand
-      setUnusedCards(emptyHand);
+      setUnusedCards(imageFiles[cardDeck]);
   }
 
   function setOppUsedHand(imageSrc) {
@@ -242,8 +251,7 @@
               height: boardCell});
 
       layer.add(oppUsedHand);
-      // Start with emptyHand
-      setOppUsedHand(emptyHand);
+      setOppUsedHand(imageFiles[cardQuestion]);
   }
 
   function start() {
