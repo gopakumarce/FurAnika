@@ -26,13 +26,31 @@
    * The actual play baord related parameters. The board is a 7-column
    * 6-row board
    */
-  var boardTop = 4; // Start 4 pixels from top
-  var boardLeft = 4;  // Start 4 pixels from left
-  var boardWidth = Math.floor((width * 3)/4) - boardLeft; // Use 3/4th of the screen for board
-  var boardHeight = height - 2*boardTop; //Leave space at top and bottom
-  var boardCellWide = Math.floor(boardWidth/7); // 7 cells wide
-  var boardCellHigh = Math.floor(boardHeight/6);  // 6 cells high
-  var boardCell = Math.min(boardCellWide,boardCellHigh)
+  var boardRows = 6;
+  var boardColumns = 7;
+  var boardHands = 3; // Number of cards in my hand
+  var boardTop = 8; // Start 8 pixels from top
+  var boardLeft = 8;  // Start 8 pixels from left
+  var boardToHandSpace = 4;
+  var emptyHand = 'yoda.jpg';
+  /* 
+   * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
+   * width = boardLeft + boardColumns*boardCellWide + boardToHandSpace + 
+   *         boardHands*boardCellWide + boardLeft
+   */
+  var boardCellWide = Math.floor((width - (boardToHandSpace+2*boardLeft))/(boardColumns+boardHands));
+  /*
+   * Leave boardTop space above and below
+   */
+  var boardCellHigh = Math.floor((height - 2*boardTop)/boardRows);
+  var boardCell = Math.min(boardCellWide,boardCellHigh);
+  /*
+   * The three hands are in a row next to each other, the usedHands are right
+   * below that and opponent's oppUsedHands are below that and unusedCards below that,
+   * all equally spaced from the top and bottom and between each of them
+   * so the spacing formula is height = (4*space + 4*boardCell)
+   */
+  var cardStackSeperation = Math.floor((height - 4*boardCell)/5);
 
   var imageObj = new Image();
   
@@ -63,7 +81,7 @@
                 ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
                 ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg'], 
                 ['yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg', 'yoda.jpg']
-               ]                
+               ];                
 
 
   var imageObjs = [];
@@ -80,19 +98,118 @@
       cell.draw();
   }
 
-  for(var row = 0; row < 6; row++) {
+  for(var row = 0; row < boardRows; row++) {
       imageObjs[row] = [];
-      for(var column = 0; column < 7; column++) {
+      for(var column = 0; column < boardColumns; column++) {
           cellImageSpecific = cellImage.bind(null, row, column)
           imageObjs[row][column] = new Image();
           imageObjs[row][column].onload = cellImageSpecific;
           imageObjs[row][column].src = images[row][column];
           if (imageObjs[row][column].complete) {
-              $(imageObjs[row][column]).load()
+              $(imageObjs[row][column]).load();
           }
-        }
+      }
   }
- 
+
+  var myHand = [];
+  var firstHand = boardLeft + boardColumns*boardCell + boardToHandSpace*boardLeft;
+
+  function setHand(hand, imageSrc) {
+      var image = new Image();
+      image.onload = function () {
+          myHand[hand].image(image);
+          myHand[hand].draw();
+      }    
+      image.src = imageSrc;
+      if (image.complete) {
+          $(image).load();
+      }
+  }
+
+  for (var hand = 0; hand < boardHands; hand++) {
+      myHand[hand] = new Konva.Image({
+          x: firstHand + (hand*boardCell),
+          y: cardStackSeperation,
+          width: boardCell,
+          height: boardCell
+      });
+      // Start with empty hand
+      layer.add(myHand[hand]);
+      setHand(hand, emptyHand);
+  }
+
+  /*
+   * Align this in the middle below the second of the three hands (0, 1, 2)
+   */
+  var usedHand = new Konva.Image({
+          x: firstHand + boardCell,
+          y: cardStackSeperation + boardCell + cardStackSeperation,
+          width: boardCell,
+          height: boardCell});
+
+  function setUsedHand(imageSrc) {
+      var image = new Image();
+      image.onload = function () {
+          usedHand.image(image)
+          usedHand.draw();
+      }    
+      image.src = imageSrc;
+      if (image.complete) {
+          $(image).load();
+      }
+  }
+  layer.add(usedHand);
+  // Start with emptyHand
+  setUsedHand(emptyHand);
+
+  /*
+   * Align this in the middle below the second of the three hands (0, 1, 2)
+   */
+  var unusedCards = new Konva.Image({
+          x: firstHand + boardCell,
+          y: cardStackSeperation + 2*boardCell + 2*cardStackSeperation,
+          width: boardCell,
+          height: boardCell});
+
+  function setUnusedCards(imageSrc) {
+      var image = new Image();
+      image.onload = function () {
+          unusedCards.image(image);
+          unusedCards.draw();
+      }    
+      image.src = imageSrc;
+      if (image.complete) {
+          $(image).load();
+      }
+  }
+  layer.add(unusedCards);
+  // Start with emptyHand
+  setUnusedCards(emptyHand);
+
+  /*
+   * Align this in the middle below the second of the three hands (0, 1, 2)
+   */
+  var oppUsedHand = new Konva.Image({
+          x: firstHand + boardCell,
+          y: cardStackSeperation + 3*boardCell + 3*cardStackSeperation,
+          width: boardCell,
+          height: boardCell});
+
+  function setOppUsedHand(imageSrc) {
+      var image = new Image();
+      image.onload = function () {
+          oppUsedHand.image(image);
+          oppUsedHand.draw();
+      }    
+      image.src = imageSrc;
+      if (image.complete) {
+          $(image).load();
+      }
+  }
+  layer.add(oppUsedHand);
+  // Start with emptyHand
+  setOppUsedHand(emptyHand);
+
   layer.add(group);
   stage.add(layer);
 
