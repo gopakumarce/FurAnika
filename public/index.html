@@ -3,11 +3,26 @@
   <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
   <script src="konva.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <div id='container'></div>
+
+<div id="start-buttons" class = 'flexme' style = 'position:absolute; top:0; bottom:0; right:0; left:0; '>
+  <div class="page-wrap" style = 'margin:auto;'>
+    <nav>
+      <ul class="nav">
+        <li id="green-button"> <a class="green-button"></a></li>
+        <li id="blue-button"> <a class="blue-button"></a></li>
+        <li id="yellow-button"> <a class="yellow-button"></a></li>
+        <li id="red-button"> <a class="red-button"></a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
 <script>
 
   var width = window.innerWidth;
@@ -41,9 +56,9 @@
    * The three hands are in a row next to each other, the usedHands are right
    * below that and opponent's oppUsedHands are below that and unusedCards below that,
    * all equally spaced from the top and bottom and between each of them
-   * so the spacing formula is height = (4*space + 4*boardCell)
+   * so the spacing formula is boardRows*boardCell = (3*space + 4*boardCell)
    */
-  var cardStackSeperation = Math.floor((height - 4*boardCell)/5);
+  var cardStackSeperation = Math.floor((boardRows*boardCell - 4*boardCell)/3);
 
   var imageFiles = ['images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
                     'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
@@ -58,6 +73,7 @@
                 [20, 00, 01, 02, 10, 08, 20]
                ];                
 
+  var startButtons = document.getElementById('start-buttons');
 
   /*
    * Uninitialized globals, will be initialized later
@@ -139,7 +155,7 @@
       for (var hand = 0; hand < boardHands; hand++) {
           myHand[hand] = new Konva.Image({
               x: firstHand + (hand*boardCell),
-              y: cardStackSeperation,
+              y: boardTop,
               width: boardCell,
               height: boardCell
           });
@@ -167,7 +183,7 @@
        */
       usedHand = new Konva.Image({
               x: firstHand + boardCell,
-              y: cardStackSeperation + boardCell + cardStackSeperation,
+              y: boardTop + boardCell + cardStackSeperation,
               width: boardCell,
               height: boardCell});
 
@@ -194,7 +210,7 @@
        */
       unusedCards = new Konva.Image({
               x: firstHand + boardCell,
-              y: cardStackSeperation + 2*boardCell + 2*cardStackSeperation,
+              y: boardTop + 2*boardCell + 2*cardStackSeperation,
               width: boardCell,
               height: boardCell});
 
@@ -221,7 +237,7 @@
        */
       oppUsedHand = new Konva.Image({
               x: firstHand + boardCell,
-              y: cardStackSeperation + 3*boardCell + 3*cardStackSeperation,
+              y: boardTop + 3*boardCell + 3*cardStackSeperation,
               width: boardCell,
               height: boardCell});
 
@@ -239,7 +255,29 @@
       initOppUsedHand();
   }
 
-  start();
+  document.getElementById('green-button').addEventListener('click', function() {
+      startButtons.style.display = 'none';
+      myColour = "green";
+      start();
+  }, false);
+
+  document.getElementById('yellow-button').addEventListener('click', function() {
+      startButtons.style.display = 'none';
+      myColour = "yellow";
+      start();
+  }, false);
+
+  document.getElementById('red-button').addEventListener('click', function() {
+      startButtons.style.display = 'none';
+      myColour = "red";
+      start();
+  }, false);
+
+  document.getElementById('blue-button').addEventListener('click', function() {
+      startButtons.style.display = 'none';
+      myColour = "blue";
+      start();
+  }, false);
 
 </script>
 </body>
