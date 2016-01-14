@@ -16,7 +16,6 @@
 <body>
 
 <div id='container'></div>
-
 <script>
 
   var width = window.innerWidth;
@@ -32,7 +31,7 @@
   var boardTop = 8; // Start 8 pixels from top
   var boardLeft = 8;  // Start 8 pixels from left
   var boardToHandSpace = 4;
-  var emptyHand = 'yoda.jpg';
+  var emptyHand = 'images/yoda.jpg';
   /* 
    * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
    * width = boardLeft + boardColumns*boardCellWide + boardToHandSpace + 
@@ -44,6 +43,8 @@
    */
   var boardCellHigh = Math.floor((height - 2*boardTop)/boardRows);
   var boardCell = Math.min(boardCellWide,boardCellHigh);
+  var firstHand = boardLeft + boardColumns*boardCell + boardToHandSpace*boardLeft;
+
   /*
    * The three hands are in a row next to each other, the usedHands are right
    * below that and opponent's oppUsedHands are below that and unusedCards below that,
@@ -52,29 +53,11 @@
    */
   var cardStackSeperation = Math.floor((height - 4*boardCell)/5);
 
-  var imageObj = new Image();
-  
-  var stage = new Konva.Stage({
-    container: 'container',
-    width: width,
-    height: height
-  });
-
-  var layer = new Konva.Layer();
-
-  /*
-  * create a group which will be used to combine
-  * multiple simple shapes.  Transforming the group will
-  * transform all of the simple shapes together as
-  * one unit
-  */
-  var group = new Konva.Group({
-      x: boardLeft,
-      y: boardTop,
-      rotation: 0
-  });
-
-  var images = [
+  var imageFiles = ['images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
+                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
+                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg',
+                    'images/yoda.jpg', 'images/yoda.jpg', 'images/yoda.jpg']
+  var boardImages = [
                 [20, 09, 17, 16, 15, 00, 20], 
                 [18, 07, 01, 13, 03, 04, 12], 
                 [11, 08, 02, 05, 10, 14, 06], 
@@ -84,13 +67,48 @@
                ];                
 
 
-  var imageObjs = [];
+  /*
+   * Uninitialized globals, will be initialized later
+  */
+  var stage;
+  var group;
+  var layer;
+  var boardImageObjs = [];
+  var myHand = [];
+  var usedHand;
+  var unusedCards;
+  var oppUsedHand;
+
+  function initCanvas() {
+      stage = new Konva.Stage({
+        container: 'container',
+        width: width,
+        height: height
+      });
+
+      layer = new Konva.Layer();
+
+      /*
+      * create a group which will be used to combine
+      * multiple simple shapes.  Transforming the group will
+      * transform all of the simple shapes together as
+      * one unit
+      */
+      group = new Konva.Group({
+          x: boardLeft,
+          y: boardTop,
+          rotation: 0
+      });
+
+      layer.add(group);
+      stage.add(layer);
+  }
 
   function cellImage(row, column) {
       var cell = new Konva.Image({
           x: boardLeft + (column * boardCell),
           y: boardTop + (row * boardCell),
-          image: imageObjs[row][column],
+          image: boardImageObjs[row][column],
           width: boardCell,
           height: boardCell
       });
@@ -98,21 +116,20 @@
       cell.draw();
   }
 
-  for(var row = 0; row < boardRows; row++) {
-      imageObjs[row] = [];
-      for(var column = 0; column < boardColumns; column++) {
-          cellImageSpecific = cellImage.bind(null, row, column)
-          imageObjs[row][column] = new Image();
-          imageObjs[row][column].onload = cellImageSpecific;
-          imageObjs[row][column].src = images[row][column];
-          if (imageObjs[row][column].complete) {
-              $(imageObjs[row][column]).load();
+  function initBoard() {
+      for(var row = 0; row < boardRows; row++) {
+          boardImageObjs[row] = [];
+          for(var column = 0; column < boardColumns; column++) {
+              cellImageSpecific = cellImage.bind(null, row, column)
+              boardImageObjs[row][column] = new Image();
+              boardImageObjs[row][column].onload = cellImageSpecific;
+              boardImageObjs[row][column].src = imageFiles[boardImages[row][column]];
+              if (boardImageObjs[row][column].complete) {
+                  $(boardImageObjs[row][column]).load();
+              }
           }
       }
   }
-
-  var myHand = [];
-  var firstHand = boardLeft + boardColumns*boardCell + boardToHandSpace*boardLeft;
 
   function setHand(hand, imageSrc) {
       var image = new Image();
@@ -126,26 +143,19 @@
       }
   }
 
-  for (var hand = 0; hand < boardHands; hand++) {
-      myHand[hand] = new Konva.Image({
-          x: firstHand + (hand*boardCell),
-          y: cardStackSeperation,
-          width: boardCell,
-          height: boardCell
-      });
-      // Start with empty hand
-      layer.add(myHand[hand]);
-      setHand(hand, emptyHand);
+  function initHand() {
+      for (var hand = 0; hand < boardHands; hand++) {
+          myHand[hand] = new Konva.Image({
+              x: firstHand + (hand*boardCell),
+              y: cardStackSeperation,
+              width: boardCell,
+              height: boardCell
+          });
+          // Start with empty hand
+          layer.add(myHand[hand]);
+          setHand(hand, emptyHand);
+      }
   }
-
-  /*
-   * Align this in the middle below the second of the three hands (0, 1, 2)
-   */
-  var usedHand = new Konva.Image({
-          x: firstHand + boardCell,
-          y: cardStackSeperation + boardCell + cardStackSeperation,
-          width: boardCell,
-          height: boardCell});
 
   function setUsedHand(imageSrc) {
       var image = new Image();
@@ -158,18 +168,21 @@
           $(image).load();
       }
   }
-  layer.add(usedHand);
-  // Start with emptyHand
-  setUsedHand(emptyHand);
 
-  /*
-   * Align this in the middle below the second of the three hands (0, 1, 2)
-   */
-  var unusedCards = new Konva.Image({
-          x: firstHand + boardCell,
-          y: cardStackSeperation + 2*boardCell + 2*cardStackSeperation,
-          width: boardCell,
-          height: boardCell});
+  function initUsedHand() {
+      /*
+       * Align this in the middle below the second of the three hands (0, 1, 2)
+       */
+      usedHand = new Konva.Image({
+              x: firstHand + boardCell,
+              y: cardStackSeperation + boardCell + cardStackSeperation,
+              width: boardCell,
+              height: boardCell});
+
+      layer.add(usedHand);
+      // Start with emptyHand
+      setUsedHand(emptyHand);
+  }
 
   function setUnusedCards(imageSrc) {
       var image = new Image();
@@ -182,18 +195,21 @@
           $(image).load();
       }
   }
-  layer.add(unusedCards);
-  // Start with emptyHand
-  setUnusedCards(emptyHand);
 
-  /*
-   * Align this in the middle below the second of the three hands (0, 1, 2)
-   */
-  var oppUsedHand = new Konva.Image({
-          x: firstHand + boardCell,
-          y: cardStackSeperation + 3*boardCell + 3*cardStackSeperation,
-          width: boardCell,
-          height: boardCell});
+  function initUnusedCards() {
+      /*
+       * Align this in the middle below the second of the three hands (0, 1, 2)
+       */
+      unusedCards = new Konva.Image({
+              x: firstHand + boardCell,
+              y: cardStackSeperation + 2*boardCell + 2*cardStackSeperation,
+              width: boardCell,
+              height: boardCell});
+
+      layer.add(unusedCards);
+      // Start with emptyHand
+      setUnusedCards(emptyHand);
+  }
 
   function setOppUsedHand(imageSrc) {
       var image = new Image();
@@ -206,13 +222,32 @@
           $(image).load();
       }
   }
-  layer.add(oppUsedHand);
-  // Start with emptyHand
-  setOppUsedHand(emptyHand);
 
-  layer.add(group);
-  stage.add(layer);
+  function initOppUsedHand() {
+      /*
+       * Align this in the middle below the second of the three hands (0, 1, 2)
+       */
+      oppUsedHand = new Konva.Image({
+              x: firstHand + boardCell,
+              y: cardStackSeperation + 3*boardCell + 3*cardStackSeperation,
+              width: boardCell,
+              height: boardCell});
 
+      layer.add(oppUsedHand);
+      // Start with emptyHand
+      setOppUsedHand(emptyHand);
+  }
+
+  function start() {
+      initCanvas();
+      initBoard();
+      initHand();
+      initUnusedCards();
+      initUsedHand();
+      initOppUsedHand();
+  }
+
+  start();
 
 </script>
 </body>
