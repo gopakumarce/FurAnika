@@ -16,6 +16,8 @@ var boardHands = 3; // Number of cards in my hand
 var boardTop = 8; // Start 8 pixels from top
 var boardLeft = 8;  // Start 8 pixels from left
 var boardToHandSpace = 4;
+var myColour;
+
 /* 
  * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
  * width = boardLeft + boardColumns*boardCellWide + boardToHandSpace + 
@@ -57,11 +59,15 @@ var cardDeck = 20;
 var cardDragon = 21;
 var cardUnicorn = 22;
 var cardQuestion = 23;
+var totalCards = 24; // Update this if a new card is added
 
 var imageFiles = ['images/tiger.jpg', 'images/kangaroo.jpg', 'images/giraffe.jpg', 'images/fox.jpg', 'images/tortoise.jpg', 'images/hippo.jpg',
                   'images/monkey.jpg', 'images/zebra.jpg', 'images/alligator.jpg', 'images/lion.jpg', 'images/wolf.jpg', 'images/moose.jpg',
                   'images/panda.jpg', 'images/shark.jpg', 'images/camel.jpg', 'images/ostrich.jpg', 'images/dolphin.jpg', 'images/elephant.jpg',
                   'images/penguin.jpg', 'images/free.png', 'images/deck.jpg', 'images/dragon.jpg', 'images/unicorn.jpg', 'images/question.jpg'];
+
+var allCards = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22,
+                0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22];
 
 var colors = ['green', 'blue', 'yellow', 'red']
 /*
@@ -71,6 +77,7 @@ var stage;
 var group;
 var layer;
 var boardImageObjs = [];
+var boardNodeObjs = [];
 var myHand = [];
 var usedHand;
 var unusedCards;
@@ -101,6 +108,31 @@ function initCanvas() {
     stage.add(layer);
 }
 
+function cellSetColor(row, column, color){
+    var oneCell = boardNodeObjs[row][column];
+    oneCell.cache();
+    oneCell.filters([Konva.Filters.RGB]);
+    switch (color) {
+        case 0: //green
+            oneCell.green(300);
+            break;  
+        case 1: //blue
+            oneCell.green(200);
+            oneCell.blue(300);
+            break;        
+        case 2: //yellow
+            oneCell.green(300);
+            oneCell.red(300);
+            break;                          
+        case 3: //red
+            oneCell.green(50);
+            oneCell.blue(50);
+            oneCell.red(300);
+            break;        
+    }
+    oneCell.draw();
+}
+
 function cellImage(row, column) {
     var cell = new Konva.Image({
         x: boardLeft + (column * boardCell),
@@ -111,13 +143,16 @@ function cellImage(row, column) {
         stroke: 'black',
         strokeWidth: 1,
     });
+    cell.cache();
     group.add(cell);
     cell.draw();
+    boardNodeObjs[row][column] = cell;
 }
 
 function initBoard() {
     for(var row = 0; row < boardRows; row++) {
         boardImageObjs[row] = [];
+        boardNodeObjs[row] = [];
         for(var column = 0; column < boardColumns; column++) {
             cellImageSpecific = cellImage.bind(null, row, column)
             boardImageObjs[row][column] = new Image();
