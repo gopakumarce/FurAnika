@@ -16,7 +16,7 @@ var boardHands = 3; // Number of cards in my hand
 var boardTop = 8; // Start 8 pixels from top
 var boardLeft = 8;  // Start 8 pixels from left
 var boardToHandSpace = 4;
-var myColour;
+var myColor;
 
 /* 
  * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
@@ -82,6 +82,7 @@ var myHand = [];
 var usedHand;
 var unusedCards;
 var oppUsedHand;
+var gameState = 'CHOOSE_COLOR'; // The starting state
 
 function initCanvas() {
     stage = new Konva.Stage({
@@ -108,8 +109,8 @@ function initCanvas() {
     stage.add(layer);
 }
 
-function cellSetColor(row, column, color){
-    var oneCell = boardNodeObjs[row][column];
+function cellSetColor(oneCell, color){
+    //var oneCell = boardNodeObjs[row][column];
     oneCell.cache();
     oneCell.filters([Konva.Filters.RGB]);
     switch (color) {
@@ -147,6 +148,7 @@ function cellImage(row, column) {
     group.add(cell);
     cell.draw();
     boardNodeObjs[row][column] = cell;
+    cell.on('click', cellClickEvent);
 }
 
 function initBoard() {
