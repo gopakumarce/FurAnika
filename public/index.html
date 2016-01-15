@@ -9,7 +9,6 @@
 <body>
 
 <div id='container'></div>
-
 <div id="start-buttons" class = 'flexme' style = 'position:absolute; top:0; bottom:0; right:0; left:0; '>
   <div class="page-wrap" style = 'margin:auto;'>
     <nav>
@@ -85,7 +84,8 @@
                     'images/penguin.jpg', 'images/free.png', 'images/deck.jpg', 'images/dragon.jpg', 'images/unicorn.jpg', 'images/question.jpg'];
 
   var startButtons = document.getElementById('start-buttons');
-
+ 
+  var colors = ['green', 'blue', 'yellow', 'red']
   /*
    * Uninitialized globals, will be initialized later
   */
@@ -128,8 +128,10 @@
           x: boardLeft + (column * boardCell),
           y: boardTop + (row * boardCell),
           image: boardImageObjs[row][column],
-          width: boardCell,
-          height: boardCell
+          width: boardCell-1,
+          height: boardCell-1,
+          stroke: 'black',
+          strokeWidth: 1,
       });
       group.add(cell);
       cell.draw();
@@ -167,8 +169,10 @@
           myHand[hand] = new Konva.Image({
               x: firstHand + (hand*boardCell),
               y: boardTop,
-              width: boardCell,
-              height: boardCell
+              width: boardCell-1,
+              height: boardCell-1,
+              stroke: 'black',
+              strokeWidth: 1
           });
           // Start with empty hand
           layer.add(myHand[hand]);
@@ -195,8 +199,10 @@
       usedHand = new Konva.Image({
               x: firstHand + boardCell,
               y: boardTop + boardCell + cardStackSeperation,
-              width: boardCell,
-              height: boardCell});
+              width: boardCell-1,
+              height: boardCell-1,
+              stroke: 'black',
+              strokeWidth: 1});
 
       layer.add(usedHand);
       setUsedHand(imageFiles[cardQuestion]);
@@ -221,8 +227,10 @@
       unusedCards = new Konva.Image({
               x: firstHand + boardCell,
               y: boardTop + 2*boardCell + 2*cardStackSeperation,
-              width: boardCell,
-              height: boardCell});
+              width: boardCell-1,
+              height: boardCell-1,
+              stroke: 'black',
+              strokeWidth: 1});
 
       layer.add(unusedCards);
       setUnusedCards(imageFiles[cardDeck]);
@@ -247,8 +255,10 @@
       oppUsedHand = new Konva.Image({
               x: firstHand + boardCell,
               y: boardTop + 3*boardCell + 3*cardStackSeperation,
-              width: boardCell,
-              height: boardCell});
+              width: boardCell-1,
+              height: boardCell-1,
+              stroke: 'black',
+              strokeWidth: 1});
 
       layer.add(oppUsedHand);
       setOppUsedHand(imageFiles[cardQuestion]);
@@ -265,25 +275,25 @@
 
   document.getElementById('green-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColour = "green";
+      myColour = 0;
       start();
   }, false);
 
   document.getElementById('yellow-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColour = "yellow";
+      myColour = 2;
       start();
   }, false);
 
   document.getElementById('red-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColour = "red";
+      myColour = 3;
       start();
   }, false);
 
   document.getElementById('blue-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColour = "blue";
+      myColour = 1;
       start();
   }, false);
 
