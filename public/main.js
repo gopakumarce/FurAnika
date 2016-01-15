@@ -109,8 +109,8 @@ function initCanvas() {
     stage.add(layer);
 }
 
-function cellSetColor(oneCell, color){
-    //var oneCell = boardNodeObjs[row][column];
+function cellSetColor(row, column, color){
+    var oneCell = boardNodeObjs[row][column];
     oneCell.cache();
     oneCell.filters([Konva.Filters.RGB]);
     switch (color) {
@@ -148,7 +148,7 @@ function cellImage(row, column) {
     group.add(cell);
     cell.draw();
     boardNodeObjs[row][column] = cell;
-    cell.on('click', cellClickEvent);
+    cell.on('click', cellClickEvent.bind(cell, row, column));
 }
 
 function initBoard() {
