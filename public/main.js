@@ -59,7 +59,6 @@ var cardDeck = 20;
 var cardDragon = 21;
 var cardUnicorn = 22;
 var cardQuestion = 23;
-var totalCards = 24; // Update this if a new card is added
 
 var imageFiles = ['images/tiger.jpg', 'images/kangaroo.jpg', 'images/giraffe.jpg', 'images/fox.jpg', 'images/tortoise.jpg', 'images/hippo.jpg',
                   'images/monkey.jpg', 'images/zebra.jpg', 'images/alligator.jpg', 'images/lion.jpg', 'images/wolf.jpg', 'images/moose.jpg',
@@ -68,8 +67,14 @@ var imageFiles = ['images/tiger.jpg', 'images/kangaroo.jpg', 'images/giraffe.jpg
 
 var allCards = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22,
                 0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22];
+var freeCards = [];
+var totalCards = 42; 
 
-var colors = ['green', 'blue', 'yellow', 'red']
+var colors = ['green', 'blue', 'yellow', 'red'];
+var handImages = [cardQuestion, cardQuestion, cardQuestion]; // all question marks
+var gameState = 'CHOOSE_COLOR'; // The starting state
+var unfilledHand = -1;
+
 /*
  * Uninitialized globals, will be initialized later
 */
@@ -82,7 +87,6 @@ var myHand = [];
 var usedHand;
 var unusedCards;
 var oppUsedHand;
-var gameState = 'CHOOSE_COLOR'; // The starting state
 
 function initCanvas() {
     stage = new Konva.Stage({
@@ -167,8 +171,10 @@ function initBoard() {
     }
 }
 
-function setHand(hand, imageSrc) {
+function setHand(hand, imgIndex) {
     var image = new Image();
+    var imageSrc = imageFiles[imgIndex];
+    handImages[hand] = imgIndex;
     image.onload = function () {
         myHand[hand].image(image);
         myHand[hand].draw();
@@ -176,6 +182,11 @@ function setHand(hand, imageSrc) {
     image.src = imageSrc;
     if (image.complete) {
         $(image).load();
+    }
+    if (imgIndex == cardQuestion) {
+        myHand[hand].draggable(false);
+    } else {
+        myHand[hand].draggable(true);
     }
 }
 
@@ -187,11 +198,13 @@ function initHand() {
             width: boardCell-1,
             height: boardCell-1,
             stroke: 'black',
-            strokeWidth: 1
+            strokeWidth: 1,
+            draggable: true            
         });
         // Start with empty hand
         layer.add(myHand[hand]);
-        setHand(hand, imageFiles[cardQuestion]);
+        setHand(hand, cardQuestion);
+        myHand[hand].on('dragend', handDragEvent.bind(myHand[hand], hand))
     }
 }
 
@@ -249,6 +262,7 @@ function initUnusedCards() {
 
     layer.add(unusedCards);
     setUnusedCards(imageFiles[cardDeck]);
+    unusedCards.on('click', unusedClickEvent.bind(unusedCards));
 }
 
 function setOppUsedHand(imageSrc) {
@@ -279,9 +293,28 @@ function initOppUsedHand() {
     setOppUsedHand(imageFiles[cardQuestion]);
 }
 
+function initFreeCards() {
+    var tmpCards = allCards.slice();
+    var max = totalCards - 1; 
+    var rand = 0;
+    for (var i = 0; i < totalCards; i++, max--) {
+        rand = Math.floor(Math.random() * (max + 1));
+        if (rand > max) {
+            console.log("Shouldnt happen, rand %d", rand);
+            rand = max;
+        }
+        freeCards[i] = tmpCards.splice(rand, 1)[0];
+    }
+}
+
+function startReinit() {
+    location.reload();     
+}
+
 function start() {
     initCanvas();
     initBoard();
+    initFreeCards();
     initHand();
     initUnusedCards();
     initUsedHand();
