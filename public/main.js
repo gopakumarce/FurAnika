@@ -16,7 +16,8 @@ var boardHands = 3; // Number of cards in my hand
 var boardTop = 8; // Start 8 pixels from top
 var boardLeft = 8;  // Start 8 pixels from left
 var boardToHandSpace = 4;
-var myColor;
+var myColor = -1;
+var oppColor = -1;
 
 /* 
  * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
@@ -70,10 +71,18 @@ var allCards = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 var freeCards = [];
 var totalCards = 42; 
 
+var fireBase = "https://furanikasequence.firebaseio.com/";
+
 var colors = ['green', 'blue', 'yellow', 'red'];
+var maxColors = 4;
+var greenColor = 0;
+var blueColor = 1;
+var yellowColor = 2;
+var redColor = 3;
 var handImages = [cardQuestion, cardQuestion, cardQuestion]; // all question marks
 var gameState = 'CHOOSE_COLOR'; // The starting state
 var unfilledHand = -1;
+var usedHandImage = -1;
 
 /*
  * Uninitialized globals, will be initialized later
@@ -83,6 +92,7 @@ var group;
 var layer;
 var boardImageObjs = [];
 var boardNodeObjs = [];
+var boardNodeColor = [];
 var myHand = [];
 var usedHand;
 var unusedCards;
@@ -114,26 +124,32 @@ function initCanvas() {
 }
 
 function cellSetColor(row, column, color){
+    boardNodeColor[row][column] = color;
     var oneCell = boardNodeObjs[row][column];
     oneCell.cache();
     oneCell.filters([Konva.Filters.RGB]);
     switch (color) {
-        case 0: //green
+        case greenColor: //green
             oneCell.green(300);
             break;  
-        case 1: //blue
+        case blueColor: //blue
             oneCell.green(200);
             oneCell.blue(300);
             break;        
-        case 2: //yellow
+        case yellowColor: //yellow
             oneCell.green(300);
             oneCell.red(300);
             break;                          
-        case 3: //red
+        case redColor: //red
             oneCell.green(50);
             oneCell.blue(50);
             oneCell.red(300);
-            break;        
+            break;   
+        case -1: //uncolour
+            oneCell.red(1);
+            oneCell.green(1);
+            oneCell.blue(1);
+            break;
     }
     oneCell.draw();
 }
@@ -159,7 +175,9 @@ function initBoard() {
     for(var row = 0; row < boardRows; row++) {
         boardImageObjs[row] = [];
         boardNodeObjs[row] = [];
+        boardNodeColor[row] = [];
         for(var column = 0; column < boardColumns; column++) {
+            boardNodeColor[row][column] = -1;
             cellImageSpecific = cellImage.bind(null, row, column)
             boardImageObjs[row][column] = new Image();
             boardImageObjs[row][column].onload = cellImageSpecific;
@@ -208,13 +226,14 @@ function initHand() {
     }
 }
 
-function setUsedHand(imageSrc) {
+function setUsedHand(imageId) {
+    usedHandImage = imageId;
     var image = new Image();
     image.onload = function () {
         usedHand.image(image)
         usedHand.draw();
     }    
-    image.src = imageSrc;
+    image.src = imageFiles[imageId];
     if (image.complete) {
         $(image).load();
     }
@@ -233,7 +252,7 @@ function initUsedHand() {
             strokeWidth: 1});
 
     layer.add(usedHand);
-    setUsedHand(imageFiles[cardQuestion]);
+    setUsedHand(cardQuestion);
 }
 
 function setUnusedCards(imageSrc) {
@@ -299,10 +318,6 @@ function initFreeCards() {
     var rand = 0;
     for (var i = 0; i < totalCards; i++, max--) {
         rand = Math.floor(Math.random() * (max + 1));
-        if (rand > max) {
-            console.log("Shouldnt happen, rand %d", rand);
-            rand = max;
-        }
         freeCards[i] = tmpCards.splice(rand, 1)[0];
     }
 }
@@ -319,5 +334,9 @@ function start() {
     initUnusedCards();
     initUsedHand();
     initOppUsedHand();
+    
+    playHandFireInit();
+    inPlayFireInit();
+    takeNewFireInit();
 }
 

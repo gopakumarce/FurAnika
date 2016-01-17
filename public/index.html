@@ -28,30 +28,33 @@
 <script src="inplay.js"></script>
 <script src="playhand.js"></script>
 <script src="takenewcard.js"></script>
+<script src="choosecolor.js"></script>
 
 <script>
  
+  chooseColorFireInit();
+
   document.getElementById('green-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColor = 0;
+      chooseColor(greenColor);
       start();
   }, false);
 
   document.getElementById('yellow-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColor = 2;
+      chooseColor(yellowColor);
       start();
   }, false);
 
   document.getElementById('red-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColor = 3;
+      chooseColor(redColor);
       start();
   }, false);
 
   document.getElementById('blue-button').addEventListener('click', function() {
       startButtons.style.display = 'none';
-      myColor = 1;
+      chooseColor(blueColor);
       start();
   }, false);
 </script>
