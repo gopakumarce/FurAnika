@@ -23,7 +23,7 @@ function handDragEvent(hand) {
 		// Set the card back to question mark, the card 
 		// goes back in place whether its played or not
 		setUsedHand(handImages[hand]);
-	    playHandFire[color].set(handImages[hand]);
+	    playHandFire[myColor].set(handImages[hand]);
 		myHand[hand].hide();
 		myHand[hand].x(firstHand + (hand*boardCell))
 		myHand[hand].y(boardTop);

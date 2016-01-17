@@ -66,8 +66,8 @@ var imageFiles = ['images/tiger.jpg', 'images/kangaroo.jpg', 'images/giraffe.jpg
                   'images/panda.jpg', 'images/shark.jpg', 'images/camel.jpg', 'images/ostrich.jpg', 'images/dolphin.jpg', 'images/elephant.jpg',
                   'images/penguin.jpg', 'images/free.png', 'images/deck.jpg', 'images/dragon.jpg', 'images/unicorn.jpg', 'images/question.jpg'];
 
-var allCards = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22,
-                0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22];
+var allCards = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22,
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22];
 var freeCards = [];
 var totalCards = 42; 
 
