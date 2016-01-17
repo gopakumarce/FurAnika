@@ -59,7 +59,7 @@ function cellClickEvent(row, column){
     }
 
     cellSetColor(row, column, myColor);
-    inPlayFire[color].set({'row': row, 'column': column, color: 'myColor'});
+    inPlayFire[myColor].set({'row': row, 'column': column, color: 'myColor'});
     gameState = "TAKE_NEW_CARD";
     console.log('moving to take new card');
 }
