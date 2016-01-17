@@ -70,6 +70,9 @@ function inPlayFireEvent(snapshot) {
     console.log(snapshot.key());
     console.log(snapshot.val());
 
+    if (snapshot.val() == null) {
+        return;
+    }
     if (parseInt(snapshot.key()) == myColor) {
         console.log('Ignore own in play');
         return;
@@ -78,11 +81,7 @@ function inPlayFireEvent(snapshot) {
         console.log('Bad state %s for in play event', gameState);
         return;
     }
-    if (snapshot.val() == null) {
-        console.log('null val in play');
-        return;
-    }
-    
+
     row = snapshot.val()['row'];
     column = snapshot.val()['column'];
     color = snapshot.val()['color'];

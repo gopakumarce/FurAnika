@@ -15,6 +15,9 @@ function chooseColorFireEvent(snapshot) {
     console.log(snapshot.key());
     console.log(snapshot.val());
 
+    if (snapshot.val() == null) {
+        return;
+    }
     if (gameState != "CHOOSE_COLOR") {
         console.log('Bad state %s to get color event %s', gameState, snapshot.val());
         return;
@@ -23,10 +26,7 @@ function chooseColorFireEvent(snapshot) {
         console.log('Ignoring own color');
         return;
     }
-    if (snapshot.val() == null) {
-        console.log('null val in color event');
-        return;
-    }
+
     /*
      * TODO: Assumes only two players
      */
@@ -64,6 +64,9 @@ function initialHandFireEvent(snapshot) {
     console.log(snapshot.key());
     console.log(snapshot.val());
 
+    if (snapshot.val() == null) {
+        return;
+    }
     if (gameState != "CHOOSE_COLOR") {
         console.log('Bad state %s to get initHand event %s', gameState, snapshot.val());
         return;
@@ -72,16 +75,13 @@ function initialHandFireEvent(snapshot) {
         console.log('Ignoring own inithand');
         return;
     }
-    if (snapshot.val() == null) {
-        console.log('null val in init hand event');
-        return;
-    }
 
     /* 
      * Distributing cards is done from top of the stack by popping, so we
      * do a pop here also since the stack is kept identical on all clients
      */
-    freeCards.pop();
+    var index = freeCards.indexOf(snapshot.val());
+    freeCards.splice(index, 1);
 
     /*
      * TODO: Again, we are assuming only one opponent.
@@ -112,6 +112,7 @@ function chooseColorFireInit() {
 function chooseColor(color) {
     console.log('set color %d', color);
     myColor = color;
+    start();
     /*
      * value here doesnt matter, the event handler checks only for the key
      */

@@ -46,14 +46,14 @@ function playHandFireEvent(snapshot) {
     console.log(snapshot.key());
     console.log(snapshot.val());
 
+    if (snapshot.val() == null) {
+        return;
+    }
     if (parseInt(snapshot.key()) == myColor) {
     	console.log('ignoring own playhand');
     	return;
     }
-    if (snapshot.val() == null) {
-        console.log('null value in own playhand');
-        return;
-    }
+
     if (gameState == "PLAY_HAND_SELF") {
     	gameState = "PLAY_HAND_OPP";
     	console.log('Opponent made the first move');

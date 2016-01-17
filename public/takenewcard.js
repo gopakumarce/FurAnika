@@ -27,14 +27,14 @@ function takeNewFireEvent(snapshot) {
     console.log(snapshot.key());
     console.log(snapshot.val());
 
+    if (snapshot.val() == null) {
+        return;
+    }
     if (parseInt(snapshot.key()) == myColor) {
         console.log('Ignore own take new');
         return;
     }
-    if (snapshot.val() == null) {
-        console.log('null val in take new event');
-        return;
-    }
+
     if (gameState != "PLAY_HAND_OPP") {
         console.log('bad state %s for take new event', gameState);
         return;
