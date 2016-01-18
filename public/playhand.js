@@ -36,6 +36,7 @@ function handDragEvent(hand) {
 		setHand(hand, cardQuestion);
         unfilledHand = hand;
         gameState = "IN_PLAY";
+        stopAnimateCell();
         console.log('Moving to state in-play');
 	} else {
 	    myHand[hand].x(firstHand + (hand*boardCell))
@@ -66,6 +67,7 @@ function playHandFireEvent(snapshot) {
         return;
     }
     setOppUsedHand(imageFiles[snapshot.val()['hand']]);
+    animateOppHand();
 }
 
 function playHandFireInit() {

@@ -99,6 +99,8 @@ function inPlayFireEvent(snapshot) {
         oppColorCells++; 
         cellSetColor(row, column, color);    
     }
+    stopAnimateOppHand();
+    animateCell(row, column);
 }
 
 function inPlayFireInit() {

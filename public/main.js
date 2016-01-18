@@ -98,6 +98,10 @@ var myHand = [];
 var usedHand;
 var unusedCards;
 var oppUsedHand;
+var cellAnimation;
+var cellAnimationRow;
+var cellAnimationColumn;
+var oppHandAnimation;
 
 function initCanvas() {
     stage = new Konva.Stage({
@@ -233,7 +237,7 @@ function initHand(startWithHands) {
         });
         // Start with empty hand
         layer.add(myHand[hand]);
-        myHand[hand].setZIndex(1);
+        myHand[hand].setZIndex(hand+1);
         if (!startWithHands) {
             setHand(hand, cardQuestion);
         }
@@ -269,7 +273,7 @@ function initUsedHand() {
             stroke: 'black',
             strokeWidth: 1});
     layer.add(usedHand);
-    usedHand.setZIndex(-1);
+    usedHand.setZIndex(0);
     setUsedHand(cardQuestion);
 }
 
@@ -297,7 +301,7 @@ function initUnusedCards() {
             stroke: 'black',
             strokeWidth: 1});
     layer.add(unusedCards);
-    unusedCards.setZIndex(-1);
+    unusedCards.setZIndex(0);
     setUnusedCards(imageFiles[cardDeck]);
     unusedCards.on('click', unusedClickEvent.bind(unusedCards));
 }
@@ -326,7 +330,7 @@ function initOppUsedHand() {
             stroke: 'black',
             strokeWidth: 1});
     layer.add(oppUsedHand);
-    oppUsedHand.setZIndex(-1);
+    oppUsedHand.setZIndex(0);
     setOppUsedHand(imageFiles[cardQuestion]);
 }
 
@@ -338,6 +342,53 @@ function initFreeCards() {
         rand = Math.floor(Math.random() * (max + 1));
         freeCards[i] = tmpCards.splice(rand, 1)[0];
     }
+}
+
+function animateCell(row, column) {
+    var amplitude = Math.floor(boardCell/3);
+    var period = 1000; //in ms
+    var centerX = boardLeft + (column * boardCell);
+
+    cellAnimation = new Konva.Animation(function(frame) {
+        boardNodeObjs[row][column].x(amplitude * Math.sin(frame.time * 2 * Math.PI / period) + centerX);
+    }, layer);
+
+    cellAnimation.start();
+    cellAnimationRow = row;
+    cellAnimationColumn = column;
+}
+
+function stopAnimateCell() {
+    if (cellAnimation == null) {
+        return;
+    }
+    row = cellAnimationRow;
+    column = cellAnimationColumn;
+    cellAnimation.stop();
+    boardNodeObjs[row][column].x(boardLeft + (column * boardCell));
+    boardNodeObjs[row][column].draw();
+    group.draw();
+}
+
+function animateOppHand() {
+    var amplitude = Math.floor(boardCell/3);
+    var period = 1000; //in ms
+    var centerX = firstHand + boardCell;
+
+    oppHandAnimation = new Konva.Animation(function(frame) {
+        oppUsedHand.x(amplitude * Math.sin(frame.time * 2 * Math.PI / period) + centerX);
+    }, layer);
+
+    oppHandAnimation.start();
+}
+
+function stopAnimateOppHand() {
+    if (oppHandAnimation == null) {
+        return;
+    }
+    oppHandAnimation.stop();
+    oppUsedHand.x(firstHand + boardCell);
+    oppUsedHand.draw();
 }
 
 function startReinit() {
