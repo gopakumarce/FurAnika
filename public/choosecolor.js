@@ -49,7 +49,7 @@ function distributeInitialHand() {
         setHand(i, hand);
         allHands.push(hand);
     }
-    initialHandFire[myColor].set(allHands);
+    initialHandFire[myColor].set({'time': Date.now(), 'allhands': allHands});
     selfInitHands = boardHands;
 }
 
@@ -79,7 +79,7 @@ function initialHandFireEvent(snapshot) {
      * Distributing cards is done from top of the stack by popping, so we
      * do a pop here also since the stack is kept identical on all clients
      */
-    var allHands = snapshot.val();
+    var allHands = snapshot.val()['allhands'];
     for (var i = 0; i < boardHands; i++) {
         index = freeCards.indexOf(allHands[i]);
         freeCards.splice(index, 1);
@@ -112,20 +112,22 @@ function chooseColorFireInit() {
 } 
 
 function chooseColor(color) {
-    console.log('set color %d', color);
-    myColor = color;
-    start();
-    /*
-     * value here doesnt matter, the event handler checks only for the key
-     */
-    chooseColorFire[color].set(color);
 
+    console.log('set color %d', color);
+    var startWithHands = 0;
+    myColor = color;
     /*
      * Our color was not chosen yet when opponent color was chosen, so the
      * color event callback wouldnt have triggerd hand-distribution.
      */
     if (myColor < oppColor) {
-        distributeInitialHand();
+        startWithHands = 1;
     }
+
+    start(startWithHands);
+    /*
+     * value here doesnt matter, the event handler checks only for the key
+     */
+    chooseColorFire[color].set({'time': Date.now(), 'color': color});
 }
 

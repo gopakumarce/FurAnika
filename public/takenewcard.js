@@ -17,7 +17,8 @@ function unusedClickEvent(){
     var card = freeCards.pop();
     setHand(unfilledHand, card);
     gameState = "PLAY_HAND_OPP";
-    takeNewFire[myColor].set(card);
+    // We shouldnt be sending card to the opponent ;)
+    takeNewFire[myColor].set({'time': Date.now(), 'card' : card});
     console.log('moving to PLAY_HAND_OPP');
 }
 

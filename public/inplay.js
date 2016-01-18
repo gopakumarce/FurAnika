@@ -7,6 +7,8 @@ var inPlayBase = fireBase + "/inplay/";
 
 function cellClickEvent(row, column){
 
+    var changeColor = 1;
+
     if (gameState != "IN_PLAY") {
         console.log("No point clicking on cell in state %s", gameState);
         return;
@@ -33,20 +35,19 @@ function cellClickEvent(row, column){
  	}
     /*
      * Drag "uncolors" opponents cells, but we cant uncolour our own colour
-     * or an uncoloured (free) cell
+     * or an uncoloured (free) cell. 
      */
     if (usedHandImage == cardDragon) {
         if ((boardNodeColor[row][column] == -1) || (boardNodeColor[row][column] == myColor)) {
             return;
         }
-        cellSetColor(row, column, -1);
-        return;
-    }
-    /*
-     * If card is not a unicorn, the the cell picked should exactly match 
-     * the card we just picked (usedHand)
-     */
-    if (usedHandImage != cardUnicorn) {
+        reSetCell(row, column);
+        changeColor = 0;
+    } else if (usedHandImage != cardUnicorn) {
+        /*
+         * If card is not a unicorn, the the cell picked should exactly match 
+         * the card we just picked (usedHand)
+         */
         if (boardImages[row][column] != usedHandImage) {
             return;
         }
@@ -58,8 +59,14 @@ function cellClickEvent(row, column){
         return;
     }
 
-    cellSetColor(row, column, myColor);
-    inPlayFire[myColor].set({'row': row, 'column': column, color: myColor});
+    if (changeColor) {
+        console.log('Cell click color %d, r %d, c %d', myColor, row, column);
+        cellSetColor(row, column, myColor);
+        inPlayFire[myColor].set({'time': Date.now(), 'row': row, 'column': column, 'color': myColor});
+    } else {
+        oppColorCells--;
+        inPlayFire[myColor].set({'time': Date.now(), 'row': row, 'column': column, 'color': -1});
+    }
     gameState = "TAKE_NEW_CARD";
     console.log('moving to take new card');
 }
@@ -86,7 +93,12 @@ function inPlayFireEvent(snapshot) {
     column = snapshot.val()['column'];
     color = snapshot.val()['color'];
 
-    cellSetColor(row, column, color);    
+    if (color == -1) {
+        reSetCell(row, column);    
+    } else {
+        oppColorCells++; 
+        cellSetColor(row, column, color);    
+    }
 }
 
 function inPlayFireInit() {

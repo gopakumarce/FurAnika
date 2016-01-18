@@ -18,6 +18,7 @@ var boardLeft = 8;  // Start 8 pixels from left
 var boardToHandSpace = 4;
 var myColor = -1;
 var oppColor = -1;
+var oppColorCells = 0;
 
 /* 
  * forumla is as below, leaving boardToHandSpace between board and the hand (boardHands)
@@ -145,13 +146,23 @@ function cellSetColor(row, column, color){
             oneCell.blue(50);
             oneCell.red(300);
             break;   
-        case -1: //uncolour
-            oneCell.red(1);
-            oneCell.green(1);
-            oneCell.blue(1);
-            break;
     }
     oneCell.draw();
+}
+
+function reSetCell(row, column) {
+    boardNodeColor[row][column] = -1;
+    boardNodeObjs[row][column].off('click');
+    boardNodeObjs[row][column].destroy();
+    boardNodeObjs[row][column] = null;
+    cellImageSpecific = cellImage.bind(null, row, column)
+    boardImageObjs[row][column] = new Image();
+    boardImageObjs[row][column].onload = cellImageSpecific;
+    boardImageObjs[row][column].src = imageFiles[boardImages[row][column]];
+    if (boardImageObjs[row][column].complete) {
+        $(boardImageObjs[row][column]).load();
+    }
+
 }
 
 function cellImage(row, column) {
@@ -209,7 +220,7 @@ function setHand(hand, imgIndex) {
     }
 }
 
-function initHand() {
+function initHand(startWithHands) {
     for (var hand = 0; hand < boardHands; hand++) {
         myHand[hand] = new Konva.Image({
             x: firstHand + (hand*boardCell),
@@ -222,8 +233,13 @@ function initHand() {
         });
         // Start with empty hand
         layer.add(myHand[hand]);
-        setHand(hand, cardQuestion);
-        myHand[hand].on('dragend', handDragEvent.bind(myHand[hand], hand))
+        if (!startWithHands) {
+            setHand(hand, cardQuestion);
+        }
+        myHand[hand].on('dragend', handDragEvent.bind(myHand[hand], hand));
+    }
+    if (startWithHands) {
+        distributeInitialHand();
     }
 }
 
@@ -327,11 +343,11 @@ function startReinit() {
     location.reload();     
 }
 
-function start() {
+function start(startWithHands) {
     initCanvas();
     initBoard();
     initFreeCards();
-    initHand();
+    initHand(startWithHands);
     initUnusedCards();
     initUsedHand();
     initOppUsedHand();

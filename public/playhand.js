@@ -15,7 +15,12 @@ function handDragEvent(hand) {
 	diffY = Math.abs(position.y - usedHandY);
 
 	if ((diffX < boardCell) && (diffY < boardCell)) {
-		if (gameState == "PLAY_HAND_SELF") {
+        /*
+         * Cant play unless its our turn, and cant play if card is dragon
+         * and there are no opponent colored cells on the board
+         */
+		if ((gameState == "PLAY_HAND_SELF") &&
+            ((handImages[hand] != cardDragon) || (oppColorCells > 0))) {
 			handPlayed = 1;
 		}
 	}
@@ -23,7 +28,7 @@ function handDragEvent(hand) {
 		// Set the card back to question mark, the card 
 		// goes back in place whether its played or not
 		setUsedHand(handImages[hand]);
-	    playHandFire[myColor].set(handImages[hand]);
+	    playHandFire[myColor].set({'time': Date.now(), 'hand': handImages[hand]});
 		myHand[hand].hide();
 		myHand[hand].x(firstHand + (hand*boardCell))
 		myHand[hand].y(boardTop);
@@ -60,7 +65,7 @@ function playHandFireEvent(snapshot) {
         console.log('Bad Game state %s in play hand event', gameState);
         return;
     }
-    setOppUsedHand(imageFiles[snapshot.val()]);
+    setOppUsedHand(imageFiles[snapshot.val()['hand']]);
 }
 
 function playHandFireInit() {
