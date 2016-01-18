@@ -233,6 +233,7 @@ function initHand(startWithHands) {
         });
         // Start with empty hand
         layer.add(myHand[hand]);
+        myHand[hand].setZIndex(1);
         if (!startWithHands) {
             setHand(hand, cardQuestion);
         }
@@ -267,8 +268,8 @@ function initUsedHand() {
             height: boardCell-1,
             stroke: 'black',
             strokeWidth: 1});
-
     layer.add(usedHand);
+    usedHand.setZIndex(-1);
     setUsedHand(cardQuestion);
 }
 
@@ -295,8 +296,8 @@ function initUnusedCards() {
             height: boardCell-1,
             stroke: 'black',
             strokeWidth: 1});
-
     layer.add(unusedCards);
+    unusedCards.setZIndex(-1);
     setUnusedCards(imageFiles[cardDeck]);
     unusedCards.on('click', unusedClickEvent.bind(unusedCards));
 }
@@ -324,8 +325,8 @@ function initOppUsedHand() {
             height: boardCell-1,
             stroke: 'black',
             strokeWidth: 1});
-
     layer.add(oppUsedHand);
+    oppUsedHand.setZIndex(-1);
     setOppUsedHand(imageFiles[cardQuestion]);
 }
 
