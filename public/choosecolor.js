@@ -106,8 +106,13 @@ function chooseColorFireInit() {
     for (var color = 0; color < maxColors; color++) {
         chooseColorFire[color] = new Firebase(chooseColorBase + color.toString());
         chooseColorFire[color].on("value", chooseColorFireEvent);
+        chooseColorFire[color].onDisconnect().remove();
+        chooseColorFire[color].on("child_removed", function(snapshot) {
+            startReinit();
+        });
         initialHandFire[color] = new Firebase(initialHandBase + color.toString());
         initialHandFire[color].on("value", initialHandFireEvent);
+        initialHandFire[color].onDisconnect().remove();
     }
 } 
 

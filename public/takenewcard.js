@@ -53,5 +53,6 @@ function takeNewFireInit() {
     for (var color = 0; color < maxColors; color++) {
         takeNewFire[color] = new Firebase(takeNewBase + color.toString());
         takeNewFire[color].on("value", takeNewFireEvent);
+        takeNewFire[color].onDisconnect().remove();
     }
 } 

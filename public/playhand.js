@@ -72,5 +72,6 @@ function playHandFireInit() {
     for (var color = 0; color < maxColors; color++) {
         playHandFire[color] = new Firebase(playHandBase + color.toString());
         playHandFire[color].on("value", playHandFireEvent);
+        playHandFire[color].onDisconnect().remove();
     }
 } 

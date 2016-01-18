@@ -105,5 +105,6 @@ function inPlayFireInit() {
     for (var color = 0; color < maxColors; color++) {
         inPlayFire[color] = new Firebase(inPlayBase + color.toString());
         inPlayFire[color].on("value", inPlayFireEvent);
+        inPlayFire[color].onDisconnect().remove();
     }
 } 
