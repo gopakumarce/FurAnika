@@ -43,14 +43,13 @@ function chooseColorFireEvent(snapshot) {
 
 function distributeInitialHand() {
     var hand = 0;
+    var allHands = [];
     for (var i = 0; i < boardHands; i++) {
         hand = freeCards.pop();
-        /*
-         * Sending events one by one here, can explore how to send as bunch
-         */
         setHand(i, hand);
-        initialHandFire[myColor].set(hand);
+        allHands.push(hand);
     }
+    initialHandFire[myColor].set(allHands);
     selfInitHands = boardHands;
 }
 
@@ -80,13 +79,16 @@ function initialHandFireEvent(snapshot) {
      * Distributing cards is done from top of the stack by popping, so we
      * do a pop here also since the stack is kept identical on all clients
      */
-    var index = freeCards.indexOf(snapshot.val());
-    freeCards.splice(index, 1);
+    var allHands = snapshot.val();
+    for (var i = 0; i < boardHands; i++) {
+        index = freeCards.indexOf(allHands[i]);
+        freeCards.splice(index, 1);
+        oppInitHands++;
+    }
 
     /*
      * TODO: Again, we are assuming only one opponent.
      */
-    oppInitHands++;
     if ((oppInitHands == boardHands) && (myColor > oppColor)) {
         distributeInitialHand();
     }

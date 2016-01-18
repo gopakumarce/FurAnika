@@ -39,7 +39,7 @@ function cellClickEvent(row, column){
         if ((boardNodeColor[row][column] == -1) || (boardNodeColor[row][column] == myColor)) {
             return;
         }
-        cellSetColor(rown, column, -1);
+        cellSetColor(row, column, -1);
         return;
     }
     /*
@@ -59,7 +59,7 @@ function cellClickEvent(row, column){
     }
 
     cellSetColor(row, column, myColor);
-    inPlayFire[myColor].set({'row': row, 'column': column, color: 'myColor'});
+    inPlayFire[myColor].set({'row': row, 'column': column, color: myColor});
     gameState = "TAKE_NEW_CARD";
     console.log('moving to take new card');
 }

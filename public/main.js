@@ -196,6 +196,7 @@ function setHand(hand, imgIndex) {
     image.onload = function () {
         myHand[hand].image(image);
         myHand[hand].draw();
+        layer.draw();
     }    
     image.src = imageSrc;
     if (image.complete) {

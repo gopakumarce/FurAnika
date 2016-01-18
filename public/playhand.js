@@ -29,7 +29,6 @@ function handDragEvent(hand) {
 		myHand[hand].y(boardTop);
 		myHand[hand].show();
 		setHand(hand, cardQuestion);
-		layer.draw();
         unfilledHand = hand;
         gameState = "IN_PLAY";
         console.log('Moving to state in-play');
@@ -57,7 +56,6 @@ function playHandFireEvent(snapshot) {
     if (gameState == "PLAY_HAND_SELF") {
     	gameState = "PLAY_HAND_OPP";
     	console.log('Opponent made the first move');
-    	return;
     } else if (gameState != "PLAY_HAND_OPP") {
         console.log('Bad Game state %s in play hand event', gameState);
         return;

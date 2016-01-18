@@ -11,13 +11,13 @@ function unusedClickEvent(){
         return;
     }
 
-    unfilledHand = 0;
     if (unfilledHand == -1) {
         return;      
     }
     var card = freeCards.pop();
     setHand(unfilledHand, card);
     gameState = "PLAY_HAND_OPP";
+    takeNewFire[myColor].set(card);
     console.log('moving to PLAY_HAND_OPP');
 }
 
