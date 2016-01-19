@@ -18,21 +18,21 @@ function cellClickEvent(row, column){
         return;
     }
 
- 	/*
- 	 * Ignore the "free" spots
- 	 */
- 	if ((row == 0) && (column == 0)) {
- 		return
- 	}
- 	if ((row == 0) && (column == 6)) {
- 		return
- 	} 	
- 	if ((row == 5) && (column == 0)) {
- 		return
- 	}
-  	if ((row == 5) && (column == 6)) {
- 		return
- 	}
+    /*
+     * Ignore the "free" spots
+     */
+    if ((row == 0) && (column == 0)) {
+        return
+    }
+    if ((row == 0) && (column == 6)) {
+        return
+    }   
+    if ((row == 5) && (column == 0)) {
+        return
+    }
+    if ((row == 5) && (column == 6)) {
+        return
+    }
     /*
      * Drag "uncolors" opponents cells, but we cant uncolour our own colour
      * or an uncoloured (free) cell. 
