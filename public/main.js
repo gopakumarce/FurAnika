@@ -157,6 +157,7 @@ function cellSetColor(row, column, color){
 function reSetCell(row, column) {
     boardNodeColor[row][column] = -1;
     boardNodeObjs[row][column].off('click');
+    boardNodeObjs[row][column].off('touchstart');
     boardNodeObjs[row][column].destroy();
     boardNodeObjs[row][column] = null;
     cellImageSpecific = cellImage.bind(null, row, column)
@@ -184,6 +185,7 @@ function cellImage(row, column) {
     cell.draw();
     boardNodeObjs[row][column] = cell;
     cell.on('click', cellClickEvent.bind(cell, row, column));
+    cell.on('touchstart', cellClickEvent.bind(cell, row, column));
 }
 
 function initBoard() {
@@ -304,6 +306,7 @@ function initUnusedCards() {
     unusedCards.setZIndex(0);
     setUnusedCards(imageFiles[cardDeck]);
     unusedCards.on('click', unusedClickEvent.bind(unusedCards));
+    unusedCards.on('touchstart', unusedClickEvent.bind(unusedCards));
 }
 
 function setOppUsedHand(imageSrc) {
