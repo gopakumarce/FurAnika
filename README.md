@@ -1,4 +1,4 @@
 
-An attempt to make the board game "Sequence for Kids" using firebase
+The board game "Sequence for Kids" using google firebase that I made for my niece, needs a google firebase account
 
 
